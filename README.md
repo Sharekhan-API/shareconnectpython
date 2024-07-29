@@ -49,7 +49,7 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install shareco
     # Make a object for SharekhanConnect class
     """Here we are passing the api-key, access-token and vendor-key(when needed) as a request header parameters"""
     access_token = "Your access token value"
-    sharekhan = SharekhanConnect(api_key,access_token)
+    sharekhan = SharekhanConnect(api_key, access_token=access_token)
     print(sharekhan.requestHeaders())       # for printing request headers
     
     # Place order history
