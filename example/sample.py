@@ -23,7 +23,7 @@ access_token=login.get_access_token(api_key,sessionwithoutvesionId,state)
 
 print(access_token)
 access_token = "Your access token value"
-sharekhan = SharekhanConnect(api_key,access_token)
+sharekhan = SharekhanConnect(api_key,access_token=access_token)
 print(sharekhan.requestHeaders())       # for printing request headers
 
 
