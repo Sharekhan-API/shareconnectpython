@@ -1,0 +1,14 @@
+# secrets / session files - never commit
+.env
+*.env
+.session.json
+sk_session.json
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
