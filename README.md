@@ -68,7 +68,8 @@ sk.exchange("NC", customer_id, order_id)        # history of one order
 sk.exchangetrades("NC", customer_id, order_id)  # trades of one order
 sk.master("NC")                        # scrip master (scripCode <-> tradingSymbol)
 sk.historicaldata("NC", 2885, "5minute")        # candles
-sk.logout(customer_id)                 # end the API session
+sk.logout(customer_id)                 # end the API session - currently returns 403 "Access Denied"
+                                       # from the server (see docstring); check the returned status
 ```
 
 Exchanges: `NC` NSE cash, `BC` BSE cash, `NF` NSE F&O, `RN` NSE currency, `MX` MCX.

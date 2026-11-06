@@ -279,7 +279,15 @@ class SharekhanConnect(object):
         return self._getRequest("api.order.cancel.byid", {"orderId": orderId})
 
     def logout(self, customerId):
-        """End the API session (SEBI rules require API sessions to be logged out daily)."""
+        """End the API session: GET /logout/{customerId} (documented endpoint).
+
+        Known server-side issue (verified 2026-11-06 with a valid token): the server answers
+        {"status": 403, "message": "error", "errorType": "Access Denied"} and the token stays
+        valid. GET is the only method the route accepts (POST/PUT/DELETE return 405), so the
+        client call is correct; this has been reported to Sharekhan support. Until it is fixed,
+        the access token simply expires on its own (it was invalid by the next morning).
+        Check the returned status instead of assuming the session ended.
+        """
         return self._getRequest("api.logout", {"customerId": customerId})
 
     def reports(self, customerId):
