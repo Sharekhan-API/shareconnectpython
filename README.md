@@ -1,231 +1,132 @@
 # SHARECONNECT-PYTHON
 
-    Sharekhan-Python is a Python library that provides a set of tools and functionalities for interacting with the Sharekhan trading platform. 
-    With Sharekhan-Python, users can access a variety of trading-related information such as stock prices, market trends, historical data,
-    stream live market data (WebSockets), and more.It also provides the ability to execute trades and orders in real time.
+Python client for the Sharekhan Trading API: login, orders, reports, holdings,
+funds, scrip master, historical candles and websocket streaming.
 
-# Installation 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install shareconnectpython
-```bash    
-    pip install shareconnect
-    pip install websocket
-```
-# Usage
-```python    
-    # package import statement
-    from SharekhanApi.sharekhanConnect import SharekhanConnect
-    
-    # Make a object call
-    
-    api_key = "Your API-KEY"
-    login = SharekhanConnect(api_key)
-    vendor_key = "Vendor key" 
-        """Pass the vendor key for vendor login otherwise keep it blank"""
-    version_id = "Version Id"
-        """Only null/1005/1006 version id is allowed to be passed"""
-    state=12345
-    url = login.login_url(vendor_key=vendor_key, version_id=version_id)
-    """This will provide you the redirect login url which can be used to login in the sharekhan account"""
-    print(url)
+> **What's new in 1.0.0.12:** correct dependencies (`cryptography`, `websocket-client`),
+> no more "Incorrect padding" when generating a session, websocket `on_close`/`on_error`
+> callbacks fixed and TLS verification enabled, new `cancelOrderById()` / `logout()`,
+> `set_session_expiry_hook()`, and corrected examples (pass `access_token=` by keyword).
 
-    
-    """After Successfully Login You will receive the request token value then you have to decrypt the token value by using secret key and then swap the request token which is a combination of RequestId and CustomerId.Then after that decrypt the request token value."""
-    
-    request_token = "Valid Request Token Value"
-    secret_key = "Your Secret Key value"
+## Installation
 
-   """Use generate session method when you are passing version id """
-    session=login.generate_session(request_token,secret_key)
-    # Generating access token for version id and pass parameters as it is passed below 
-    access_token=login.get_access_token(api_key,session,state,versionId=version_id)
-    
-    """Use generate session without version id method when you are not passing version id """
-    sessionwithoutvesionId=login.generate_session_without_versionId(request_token,secret_key)
-    # Generating access token for without version id 
-    access_token=login.get_access_token(api_key,sessionwithoutvesionId,state)
-    
-    print(access_token)
-    
-    # Make a object for SharekhanConnect class
-    """Here we are passing the api-key, access-token and vendor-key(when needed) as a request header parameters"""
-    access_token = "Your access token value"
-    sharekhan = SharekhanConnect(api_key,access_token)
-    print(sharekhan.requestHeaders())       # for printing request headers
-    
-    # Place order history
-    
-     orderparams={
-     "customerId": "XXXXXXX",
-     "scripCode": 2475,
-     "tradingSymbol": "ONGC",
-     "exchange": "NC",
-     "transactionType": "B",    --> (B, S, BM, SM, SAM)
-     "quantity": 1,
-     "disclosedQty": 0,
-     "price": "149.5",
-     "triggerPrice": "0",
-     "rmsCode": "ANY",
-     "afterHour": "N",
-     "orderType": "NORMAL",
-     "channelUser": "XXXXXXX",      (Use LoginId as ChannelUser)
-     "validity": "GFD",
-     "requestType": "NEW",
-     "productType": "INVESTMENT"    --> (INVESTMENT or (INV), BIGTRADE or (BT), BIGTRADEPLUS or (BT+))
-     #Below parameters need to be added for FNO trading
-    "instrumentType": "FUTCUR";    --> (Future Stocks(FS)/ Future Index(FI)/ Option Index(OI)/ Option Stocks(OS)/ Future Currency(FUTCUR)/ Option Currency(OPTCUR))
-    "strikePrice": "-1";
-    "optionType": "XX";    --> (XX/PE/CE)
-    "expiry": "31/03/2023";
-    }
-    
-     order=sharekhan.placeOrder(orderparams)
-     print("PlaceOrder: {}".format(order))
-
-    # modify order
-
-    orderparams={
-     "orderId":"XXXXXXXXXXX",
-       "customerId": "XXXXXXX",
-     "scripCode": 2475,
-     "tradingSymbol": "ONGC",
-     "exchange": "NC",
-     "transactionType": "B",    --> (B, S, BM, SM, SAM)
-     "quantity": 1,
-     "disclosedQty": 0,
-     "price": "149.5",
-     "triggerPrice": "0",
-     "rmsCode": "ANY",
-     "afterHour": "N",
-     "orderType": "NORMAL",
-     "channelUser": "XXXXXXX",      (Use LoginId as ChannelUser)
-     "validity": "GFD",
-     "requestType": "MODIFY",
-     "productType": "INVESTMENT"    --> (INVESTMENT or (INV), BIGTRADE or (BT), BIGTRADEPLUS or (BT+))
-     #Below parameters need to be added for FNO trading
-    "instrumentType": "FUTCUR";    --> (Future Stocks(FS)/ Future Index(FI)/ Option Index(OI)/ Option Stocks(OS)/ Future Currency(FUTCUR)/ Option Currency(OPTCUR))
-    "strikePrice": "-1";
-    "optionType": "XX";    --> (XX/PE/CE)
-    "expiry": "31/03/2023";
-    }
-    order=sharekhan.modifyOrder(orderparams)
-    print("ModifyOrder: {}".format(order))
-    
-    # cancel  order
-    
-    orderparams={
-     "orderId":"XXXXXXX",
-     "customerId": "XXXXXXX",
-     "scripCode": 2475,
-     "tradingSymbol": "ONGC",
-     "exchange": "NC",
-     "transactionType": "B",    --> (B, S, BM, SM, SAM)
-     "quantity": 1,
-     "disclosedQty": 0,
-     "price": "149.5",
-     "triggerPrice": "0",
-     "rmsCode": "ANY",
-     "afterHour": "N",
-     "orderType": "NORMAL",
-     "channelUser": "XXXXXXX",      (Use LoginId as ChannelUser)
-     "validity": "GFD",
-     "requestType": "CANCEL",
-     "productType": "INVESTMENT"    --> (INVESTMENT or (INV), BIGTRADE or (BT), BIGTRADEPLUS or (BT+))
-     #Below parameters need to be added for FNO trading
-    "instrumentType": "FUTCUR";    --> (Future Stocks(FS)/ Future Index(FI)/ Option Index(OI)/ Option Stocks(OS)/ Future Currency(FUTCUR)/ Option Currency(OPTCUR))
-    "strikePrice": "-1";
-    "optionType": "XX";    --> (XX/PE/CE)
-    "expiry": "31/03/2023";
-    }
-    order=sharekhan.cancelOrder(orderparams)
-    print("CancelOrder: {}".format(order))
-    
-    # Retrieves all positions
-    
-    customerId="customerId < int data type>"
-    order=sharekhan.trades(customerId)
-    print("Postion Reports: {}".format(order))
-    
-    # Retrieve history of an given order
-    
-    exchange="exchange value <string>"
-    customerId="customerId <int data type>"
-    orderId="orderId <int data type>"
-    order=sharekhan.exchange(exchange, customerId, orderId)
-    print("Order Details: {}".format(order))
-    
-    # Retrieves the trade  generated by an order
-    
-    exchange="exchange value <string>"
-    customerId="customerId <int data type>"
-    orderId="orderId <int data type>"
-    order=sharekhan.exchangetrades(exchange, customerId, orderId)
-    print("Trade Generated By an Order : {}".format(order))
-    
-    
-    # services Holdings
-    
-    customerId="customerId <int data type>"
-    order=sharekhan.holdings(customerId)
-    print("Holdings : {}".format(order))
-    
-    # Script Master
-    
-    exchange="exchange value <string>"
-    order=sharekhan.master(exchange)
-    print("Script Master : {}".format(order))
-    
-    
-    # Historical Data
-    
-    exchange="exchange value <string>"
-    scripcode="Unique scripcode provided by the broker <int>"
-    interval="Available Intervals <string>"
-    order=sharekhan.historicaldata(exchange, scripcode, interval)
-    print("Holdings Data: {}".format(order))
+```bash
+# from this folder (use a virtual environment)
+pip install -e .
+# or just the dependencies
+pip install requests six cryptography websocket-client
 ```
 
- # websocket Programming Testing
+Do **not** install the packages `websocket` or `Crypto` — they are unrelated
+projects that break this SDK. If you have them: `pip uninstall -y websocket crypto`.
+
+## Prerequisites (Sharekhan dashboard)
+
+1. Create an app at https://www.sharekhan.com/trading-api/dashboard → you get an
+   **API key** and a 32-character **secret key**.
+2. **Redirect URL** – e.g. `http://127.0.0.1` (exactly, no spaces).
+3. **Static IP** – the public IP of the machine that will call the API. Calls from
+   any other IP are rejected (SEBI retail-algo rules).
+
+## Login (once per day – tokens are valid ~24h)
+
 ```python
-    from SharekhanApi.sharekhanWebsocket import SharekhanWebSocket
+from SharekhanApi import SharekhanConnect
 
-    params = {
-        "access_token": access_token
-    }
-    action = 1
-    mode = 1
-    
-    token_list = {"action": "subscribe", "key": ["feed"], "value": [""]}
-    feed = {"action": "feed", "key": ["depth"], "value": ["MX250715"]}
-    unsubscribefeed = {"action":"unsubscribe","key":["feed"],"value":["NC22,NF37833,NF37834,MX253461,RN7719"]}
-    
-    sws = SharekhanWebSocket(access_token)
-    
-    
-    def on_data(wsapp, message):
-        print("Ticks: {}".format(message))
-    
-    
-    def on_open(wsapp):
-        print("on open")
-        sws.subscribe(token_list)
-        # sws.fetchData(feed)
-        # sws.unsubscribe(unsubscribefeed)
-        # sws.close_connection()
-    
-    
-    def on_error(wsapp, error):
-        print(error)
-    
-    
-    def on_close(wsapp):
-        print("Close")
-    
-    
-    # Assign the callbacks.
-    sws.on_open = on_open
-    sws.on_data = on_data
-    sws.on_error = on_error
-    sws.on_close = on_close
-    
-    sws.connect()
+api_key, secret_key = "YOUR_API_KEY", "YOUR_32_CHAR_SECRET"
+login = SharekhanConnect(api_key)
+
+# 1. open this URL in a browser, log in with user-id / password / TOTP
+print(login.login_url(version_id=1005))
+
+# 2. you are redirected to  http://127.0.0.1/?request_token=XXXX&state=12345
+request_token = "XXXX"   # copy from the address bar
+
+# 3. swap + exchange for an access token
+session = login.generate_session(request_token, secret_key)     # version_id=1005
+resp = login.get_access_token(api_key, session, 12345, versionId=1005)
+access_token = resp["data"]["token"]
+customer_id  = resp["data"]["customerId"]
 ```
+
+If you logged in **without** `version_id`, use
+`generate_session_without_versionId()` and omit `versionId`.
+
+## Using the API
+
+```python
+# IMPORTANT: pass access_token by keyword. The 2nd positional parameter is `state`;
+# SharekhanConnect(api_key, access_token) silently sends no token -> 403 Access Denied.
+sk = SharekhanConnect(api_key, access_token=access_token)
+sk.set_session_expiry_hook(lambda: print("token expired - log in again"))
+
+sk.funds("NC", customer_id)            # limits / margin
+sk.holdings(customer_id)               # demat holdings
+sk.reports(customer_id)                # all orders today
+sk.trades(customer_id)                 # positions today (netQty, mtm, ...)
+sk.exchange("NC", customer_id, order_id)        # history of one order
+sk.exchangetrades("NC", customer_id, order_id)  # trades of one order
+sk.master("NC")                        # scrip master (scripCode <-> tradingSymbol)
+sk.historicaldata("NC", 2885, "5minute")        # candles
+sk.logout(customer_id)                 # end the API session
+```
+
+Exchanges: `NC` NSE cash, `BC` BSE cash, `NF` NSE F&O, `RN` NSE currency, `MX` MCX.
+Intervals: `1minute 3minute 5minute 10minute 15minute 30minute 60minute 90minute
+daily weekly monthly quarterly halfyearly yearly`.
+
+### Orders
+
+```python
+order = {
+    "customerId": customer_id, "channelUser": customer_id,   # channelUser = login id
+    "scripCode": 2475, "tradingSymbol": "ONGC", "exchange": "NC",
+    "transactionType": "B",          # B / S (BM, SM, SAM for special cases)
+    "quantity": 1, "disclosedQty": 0,
+    "price": "149.50",               # string; "0" = market
+    "triggerPrice": "0",             # > 0 for stop-loss orders
+    "rmsCode": "ANY",                # NEW: "ANY"; MODIFY/CANCEL: rmscode returned by placeOrder
+    "afterHour": "N",                # "Y" = AMO
+    "orderType": "NORMAL",
+    "validity": "GFD",               # GFD / MyGTD / IOC
+    "requestType": "NEW",            # NEW / MODIFY / CANCEL
+    "productType": "INVESTMENT",     # INVESTMENT (INV) / BIGTRADE (BT) / BIGTRADEPLUS (BT+)
+    # F&O only:
+    # "instrumentType": "FS", "strikePrice": "-1", "optionType": "XX", "expiry": "31/03/2027",
+}
+r = sk.placeOrder(order)             # -> data.orderId, data.rmscode
+sk.modifyOrder({**order, "orderId": r["data"]["orderId"], "rmsCode": r["data"]["rmscode"],
+                "requestType": "MODIFY", "price": "149.00"})
+sk.cancelOrder({**order, "orderId": r["data"]["orderId"], "rmsCode": r["data"]["rmscode"],
+                "requestType": "CANCEL"})
+sk.cancelOrderById(r["data"]["orderId"])
+```
+
+## Websocket streaming
+
+```python
+import json
+from SharekhanApi import SharekhanWebSocket
+
+sws = SharekhanWebSocket(access_token)          # api_key=... optional
+
+def on_open(ws):
+    sws.subscribe({"action": "subscribe", "key": ["feed", "ack"], "value": [""]})
+    sws.fetchData({"action": "feed", "key": ["ltp"], "value": ["NC2885,NC22"]})   # or "depth"
+    sws.fetchData({"action": "ack", "key": [""], "value": [str(customer_id)]})    # order updates
+
+sws.on_open  = on_open
+sws.on_data  = lambda ws, msg: print(json.loads(msg))
+sws.on_error = lambda ws, err: print("error", err)
+sws.on_close = lambda ws: print("closed")
+sws.connect()        # blocks - run in a thread if your program does other work
+```
+
+Unsubscribe: `sws.unsubscribe({"action":"unsubscribe","key":["feed"],"value":["NC2885"]})`.
+
+## Errors
+
+Auth/RMS errors come back in the JSON body, e.g.
+`{"status": 403, "message": "error", "errorType": "Access Denied"}`.
+Codes: 400 bad input · 403 token expired/denied · 404 not found ·
+429 rate-limited · 500 general · 502 RMS down. 204 = no records.
