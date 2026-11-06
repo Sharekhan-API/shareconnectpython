@@ -3,7 +3,7 @@ from SharekhanApi.sharekhanConnect import SharekhanConnect
 api_key = "Your Api Key"
 login = SharekhanConnect(api_key)
 vendor_key = ""         # vendor key for vendor login otherwise keep it null
-version_id = ""         # version id= 1005 or 1006 otherwise keep it null
+version_id = "1005"     # recommended; use generate_session() with 1005, generate_session_without_versionId() with no version
 state=12345
 url = login.login_url(vendor_key, version_id)
 print(url)
@@ -23,7 +23,7 @@ access_token=login.get_access_token(api_key,sessionwithoutvesionId,state)
 
 print(access_token)
 access_token = "Your access token value"
-sharekhan = SharekhanConnect(api_key,access_token)
+sharekhan = SharekhanConnect(api_key, access_token=access_token)   # keyword! 2nd positional arg is "state"
 print(sharekhan.requestHeaders())       # for printing request headers
 
 
